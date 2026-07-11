@@ -3,14 +3,14 @@ version = "3.31"
 cmkr-include = "cmkr.cmake"
 
 [project]
-name = "cpp-template"
-description = "A simple template for cross-platform apps in C++"
+name = "GT7 Viewer"
+description = "A simple app to view car telemetry from Gran Turismo 7 in real time"
 languages = ["C", "CXX"]
 
 [variables]
 CMAKE_EXPORT_COMPILE_COMMANDS = true
 
-[target.template]
+[target.gt7viewer]
 type = "executable" 
 sources = [
     "src/**.cpp",
