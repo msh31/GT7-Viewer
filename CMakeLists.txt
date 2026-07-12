@@ -32,13 +32,14 @@ project("GT7 Viewer"
 		C
 		CXX
 	DESCRIPTION
-		"A simple app to view  car telemetry from Gran Turismo 7 in real time"
+		"A simple app to view car telemetry from Gran Turismo 7 in real time"
 )
 
 # Target: gt7viewer
 set(gt7viewer_SOURCES
 	cmake.toml
 	"src/main.cpp"
+	"src/server/server.cpp"
 )
 
 add_executable(gt7viewer)

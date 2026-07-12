@@ -1,9 +1,8 @@
-#include <constants.hpp>
+#include <server/server.hpp>
 
 int main( ) {
-    std::println( "App Name: {}", APP_NAME );
-    std::println( "App Author: {}", APP_AUTHOR );
-    std::println( "App Version: {}", APP_VERSION );
-
+    CServer server;
+    server.start( );
+    server.listen( ); // blocking
     return 0;
 }
