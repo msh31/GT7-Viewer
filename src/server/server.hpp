@@ -15,6 +15,8 @@ class CServer {
         bool stop( );
         void listen( );
 
+        SOCKET get_socket( ) const { return m_socket; };
+
     private:
         bool m_is_server_running = false;
         int m_port = 33740;

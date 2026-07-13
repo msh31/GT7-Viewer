@@ -38,6 +38,7 @@ project("GT7 Viewer"
 # Target: gt7viewer
 set(gt7viewer_SOURCES
 	cmake.toml
+	"src/heartbeat/heartbeat.cpp"
 	"src/main.cpp"
 	"src/server/server.cpp"
 )

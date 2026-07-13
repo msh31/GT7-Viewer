@@ -49,12 +49,12 @@ void CServer::listen( ) {
 
         ssize_t n = recvfrom( m_socket, buf, sizeof( buf ), 0, (struct sockaddr*)&client, &clen );
         if ( n < 0 ) {
-            std::println( "[error]: recvfrom returned less than 0 indicating a failure: {}", n );
+            std::println( "[error] recvfrom returned less than 0 indicating a failure: {}", n );
             break;
         }
 
         char ip[INET_ADDRSTRLEN];
         inet_ntop( AF_INET, &client.sin_addr, ip, sizeof( ip ) );
-        std::println( "[+] {} bytes from {}:{}", n, ip, ntohs( client.sin_port ) );
+        std::println( "[inf] received {} bytes from {}:{}", n, ip, ntohs( client.sin_port ) );
     }
 }
