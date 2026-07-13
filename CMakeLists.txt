@@ -57,6 +57,7 @@ set(gt7viewer_SOURCES
 	cmake.toml
 	"src/heartbeat/heartbeat.cpp"
 	"src/main.cpp"
+	"src/packet/packet.cpp"
 	"src/server/server.cpp"
 )
 

@@ -1,4 +1,5 @@
 #include "server.hpp"
+#include <packet/packet.hpp>
 
 // PUBLIC
 bool CServer::start( ) {
@@ -43,6 +44,8 @@ bool CServer::stop( ) {
 
 void CServer::listen( ) {
     char buf[MAX_UDP_PAYLOAD_SIZE];
+
+    auto key = Packet::get_key_bytes( );
     while ( 1 ) {
         struct sockaddr_in client;
         socklen_t clen = sizeof( client );
@@ -56,5 +59,18 @@ void CServer::listen( ) {
         char ip[INET_ADDRSTRLEN];
         inet_ntop( AF_INET, &client.sin_addr, ip, sizeof( ip ) );
         std::println( "[inf] received {} bytes from {}:{}", n, ip, ntohs( client.sin_port ) );
+
+        auto buffer = reinterpret_cast<uint8_t*>( buf );
+
+        if ( n != 296 ) {
+            std::println( "[error] received {} bytes when 296 were expected!", n );
+            continue;
+        }
+        std::span<uint8_t, 296> output( buffer, n );
+
+        auto nonce = Packet::derive_nonce( output );
+        auto decrypted_packet = Packet::decrypt( output, key, nonce );
+
+        std::println( "{}", std::span( decrypted_packet ).first( 16 ) );
     }
 }
