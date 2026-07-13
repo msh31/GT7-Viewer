@@ -7,6 +7,12 @@ name = "GT7 Viewer"
 description = "A simple app to view car telemetry from Gran Turismo 7 in real time"
 languages = ["C", "CXX"]
 
+[fetch-content.salsa20]
+git = "https://github.com/everard/Salsa20"
+tag = "42d610ea31f3308f61417d54db9a2f57faf2dcb0"
+shallow = true 
+system = false
+
 [variables]
 CMAKE_EXPORT_COMPILE_COMMANDS = true
 
@@ -17,6 +23,7 @@ sources = [
 ]
 include-directories = [
     "src",
+    "${salsa20_SOURCE_DIR}/Source"
 ]
 compile-features = ["cxx_std_23"]
 precompile-headers = ["src/pch.hpp"]

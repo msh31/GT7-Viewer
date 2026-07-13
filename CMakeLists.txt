@@ -35,6 +35,23 @@ project("GT7 Viewer"
 		"A simple app to view car telemetry from Gran Turismo 7 in real time"
 )
 
+include(FetchContent)
+
+# Fix warnings about DOWNLOAD_EXTRACT_TIMESTAMP
+if(POLICY CMP0135)
+	cmake_policy(SET CMP0135 NEW)
+endif()
+message(STATUS "Fetching salsa20 (42d610ea31f3308f61417d54db9a2f57faf2dcb0)...")
+FetchContent_Declare(salsa20
+	GIT_REPOSITORY
+		"https://github.com/everard/Salsa20"
+	GIT_TAG
+		42d610ea31f3308f61417d54db9a2f57faf2dcb0
+	GIT_SHALLOW
+		ON
+)
+FetchContent_MakeAvailable(salsa20)
+
 # Target: gt7viewer
 set(gt7viewer_SOURCES
 	cmake.toml
@@ -54,6 +71,7 @@ target_compile_features(gt7viewer PRIVATE
 
 target_include_directories(gt7viewer PRIVATE
 	src
+	"${salsa20_SOURCE_DIR}/Source"
 )
 
 target_precompile_headers(gt7viewer PRIVATE
