@@ -63,6 +63,9 @@ void CServer::listen( ) {
         ssize_t n = recvfrom( m_socket, buf, sizeof( buf ), 0, (struct sockaddr*)&client, &clen );
         if ( n < 0 ) {
             if ( errno == EAGAIN || errno == EWOULDBLOCK ) {
+#ifndef NDEBUG
+                SPDLOG_INFO( "[info] recvfrom returned a timeout: {}", errno );
+#endif
                 continue; // just a timeout, loop back and recheck stop_flag
             }
             SPDLOG_ERROR( "[error] recvfrom returned: {}", errno );
@@ -70,8 +73,9 @@ void CServer::listen( ) {
         }
         char ip[INET_ADDRSTRLEN];
         inet_ntop( AF_INET, &client.sin_addr, ip, sizeof( ip ) );
-        SPDLOG_INFO( "[inf] received {} bytes from {}:{}", n, ip, ntohs( client.sin_port ) );
-
+#ifndef NDEBUG
+        SPDLOG_INFO( "[info] received {} bytes from {}:{}", n, ip, ntohs( client.sin_port ) );
+#endif
         auto buffer = reinterpret_cast<uint8_t*>( buf );
         if ( n != 296 ) {
             SPDLOG_ERROR( "[error] received {} bytes when 296 were expected!", n );
@@ -86,6 +90,10 @@ void CServer::listen( ) {
 
         std::lock_guard lock( m_packet_mutex );
         m_packet_a = Packet::parse( decrypted_packet );
+
+#ifndef NDEBUG
+        SPDLOG_INFO( "[info] parsed a packet!" );
+#endif
         // std::println( "Speed: {}", packet_a.speed );
         // std::println( "Lap: {}/{}", packet_a.lapCount, packet_a.totalLaps );
     }
