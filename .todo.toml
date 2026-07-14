@@ -1,0 +1,13 @@
+project = "GT7-Viewer"
+
+[[tasks]]
+  id = 1
+  title = "Improve server listen handling because recv blocks when it doesnt have packets to handle"
+  status = "todo"
+  created = 2026-07-14T23:05:41.312971685+02:00
+  order = 0
+
+  [[tasks.comments]]
+    id = 1
+    text = "recvfrom timeout means join() can still stall briefly on shutdown; switch to non-blocking socket + poll/select if this becomes an issue"
+    created = 2026-07-14T23:06:24.704696147+02:00
