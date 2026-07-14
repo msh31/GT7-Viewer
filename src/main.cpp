@@ -1,26 +1,21 @@
-#include <heartbeat/heartbeat.hpp>
-#include <server/server.hpp>
+#include "app/app.hpp"
+#include <backend/window/window_manager.hpp>
+
+#ifdef _WIN32 // forces Windows to treat the app as a GUI Application
+    #pragma comment( linker, "/subsystem:windows /entry:mainCRTStartup" )
+#endif
 
 int main( ) {
-    CServer server;
-    if ( !server.start( ) ) {
-        std::println( "[error] failed to start UDP server!" );
-        return -1;
+    try {
+        CWindowManager window;
+        CApp           app;
+
+        app.init( );
+        SPDLOG_INFO( "Initialized succesfully!" );
+        window.run( [&app] { app.render( ); } );
+    } catch ( const std::exception& e ) {
+        SPDLOG_CRITICAL( "Fatal: {}", e.what( ) );
+        return 1;
     }
-
-    auto socket = server.get_socket( );
-
-    std::string ps4_ip = "192.168.178.36";
-    int ps4_port = 33739;
-    char payload = 'A'; // packet A
-
-    CHeartBeat heartbeat( ps4_ip, ps4_port );
-    if ( !heartbeat.send( socket, payload ) ) {
-        std::println( "[error] failed to send heartbeat with payload: {}", payload );
-        return -1;
-    }
-    std::println( "[inf] sent heartbeat: {}", payload );
-
-    server.listen( ); // blocking
     return 0;
 }

@@ -13,6 +13,19 @@ tag = "42d610ea31f3308f61417d54db9a2f57faf2dcb0"
 shallow = true 
 system = false
 
+[find-package.glad]
+required = true
+[find-package.glfw3]
+required = true
+[find-package.imgui]
+required = true
+[find-package.nlohmann_json]
+required = true
+[find-package.spdlog]
+required = true
+# [find-package.GTest]
+# required = true
+
 [variables]
 CMAKE_EXPORT_COMPILE_COMMANDS = true
 
@@ -20,10 +33,34 @@ CMAKE_EXPORT_COMPILE_COMMANDS = true
 type = "executable" 
 sources = [
     "src/**.cpp",
+    "vendor/imgui/imgui_stdlib.cpp",
 ]
 include-directories = [
     "src",
-    "${salsa20_SOURCE_DIR}/Source"
+    "${salsa20_SOURCE_DIR}/Source",
+    "vendor/imgui",
 ]
 compile-features = ["cxx_std_23"]
+link-libraries = ["glad::glad", "glfw", "imgui::imgui", "nlohmann_json::nlohmann_json", "spdlog::spdlog"]
 precompile-headers = ["src/pch.hpp"]
+cmake-after = """
+find_path(IMGUI_INCLUDE_DIR imgui.h REQUIRED)
+cmake_path(GET IMGUI_INCLUDE_DIR PARENT_PATH IMGUI_ROOT_DIR)
+target_include_directories(gt7viewer PRIVATE "${IMGUI_ROOT_DIR}/res/bindings")
+target_sources(gt7viewer PRIVATE
+    "${IMGUI_ROOT_DIR}/res/bindings/imgui_impl_glfw.cpp"
+    "${IMGUI_ROOT_DIR}/res/bindings/imgui_impl_opengl3.cpp"
+)
+"""
+
+# [target.viewer_tests]
+# type = "executable"
+# sources = ["tests/**.cpp"]
+# include-directories = ["src"]
+# compile-features = ["cxx_std_23"]
+# link-libraries = ["GTest::gtest_main"]
+# precompile-headers = ["src/pch.hpp"]
+# cmake-after = """
+# enable_testing()
+# add_test(NAME template_tests COMMAND template_tests)
+# """

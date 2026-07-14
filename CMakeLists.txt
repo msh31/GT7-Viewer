@@ -35,6 +35,17 @@ project("GT7 Viewer"
 		"A simple app to view car telemetry from Gran Turismo 7 in real time"
 )
 
+# Packages
+find_package(glad REQUIRED)
+
+find_package(glfw3 REQUIRED)
+
+find_package(imgui REQUIRED)
+
+find_package(nlohmann_json REQUIRED)
+
+find_package(spdlog REQUIRED)
+
 include(FetchContent)
 
 # Fix warnings about DOWNLOAD_EXTRACT_TIMESTAMP
@@ -55,10 +66,32 @@ FetchContent_MakeAvailable(salsa20)
 # Target: gt7viewer
 set(gt7viewer_SOURCES
 	cmake.toml
-	"src/heartbeat/heartbeat.cpp"
+	"src/app/app.cpp"
+	"src/backend/config/config.cpp"
+	"src/backend/font_manager/font_manager.cpp"
+	"src/backend/heartbeat/heartbeat.cpp"
+	"src/backend/packet/packet.cpp"
+	"src/backend/server/server.cpp"
+	"src/backend/task_runner/task_runner.cpp"
+	"src/backend/text_pipeline/text_pipeline.cpp"
+	"src/backend/ui_manager/ui_manager.cpp"
+	"src/backend/window/window_manager.cpp"
+	"src/frontend/components/menubar/menubar.cpp"
+	"src/frontend/components/sidebar/sidebar.cpp"
+	"src/frontend/components/statusbar/statusbar.cpp"
+	"src/frontend/dialogs/confirm/confirm_dialog.cpp"
+	"src/frontend/layout/ribbon/ribbon.cpp"
+	"src/frontend/layout/sidebar/sidebar.cpp"
+	"src/frontend/layout/tabbar/tabbar.cpp"
+	"src/frontend/notification/notification.cpp"
+	"src/frontend/theme/theme.cpp"
+	"src/frontend/views/cache_demo/cache_demo_view.cpp"
+	"src/frontend/views/debug/debug_view.cpp"
+	"src/frontend/views/home/home_view.cpp"
+	"src/frontend/views/pipeline/pipeline_demo.cpp"
+	"src/frontend/views/settings/settings_view.cpp"
 	"src/main.cpp"
-	"src/packet/packet.cpp"
-	"src/server/server.cpp"
+	"vendor/imgui/imgui_stdlib.cpp"
 )
 
 add_executable(gt7viewer)
@@ -73,6 +106,15 @@ target_compile_features(gt7viewer PRIVATE
 target_include_directories(gt7viewer PRIVATE
 	src
 	"${salsa20_SOURCE_DIR}/Source"
+	"vendor/imgui"
+)
+
+target_link_libraries(gt7viewer PRIVATE
+	glad::glad
+	glfw
+	imgui::imgui
+	nlohmann_json::nlohmann_json
+	spdlog::spdlog
 )
 
 target_precompile_headers(gt7viewer PRIVATE
@@ -83,3 +125,12 @@ get_directory_property(CMKR_VS_STARTUP_PROJECT DIRECTORY ${PROJECT_SOURCE_DIR} D
 if(NOT CMKR_VS_STARTUP_PROJECT)
 	set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT gt7viewer)
 endif()
+
+set(CMKR_TARGET gt7viewer)
+find_path(IMGUI_INCLUDE_DIR imgui.h REQUIRED)
+cmake_path(GET IMGUI_INCLUDE_DIR PARENT_PATH IMGUI_ROOT_DIR)
+target_include_directories(gt7viewer PRIVATE "${IMGUI_ROOT_DIR}/res/bindings")
+target_sources(gt7viewer PRIVATE
+    "${IMGUI_ROOT_DIR}/res/bindings/imgui_impl_glfw.cpp"
+    "${IMGUI_ROOT_DIR}/res/bindings/imgui_impl_opengl3.cpp"
+)
