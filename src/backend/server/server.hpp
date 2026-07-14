@@ -16,6 +16,7 @@ class CServer {
         void listen( );
 
         SOCKET get_socket( ) const { return m_socket; };
+        std::atomic<bool> stop_flag{ false };
 
     private:
         bool m_is_server_running = false;

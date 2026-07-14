@@ -1,5 +1,6 @@
 #include "server.hpp"
 #include <backend/packet/packet.hpp>
+#include <cerrno>
 
 // PUBLIC
 bool CServer::start( ) {
@@ -46,13 +47,16 @@ void CServer::listen( ) {
     char buf[MAX_UDP_PAYLOAD_SIZE];
 
     auto key = Packet::get_key_bytes( );
-    while ( 1 ) {
+    while ( !stop_flag.load( ) ) {
         struct sockaddr_in client;
         socklen_t clen = sizeof( client );
 
         ssize_t n = recvfrom( m_socket, buf, sizeof( buf ), 0, (struct sockaddr*)&client, &clen );
         if ( n < 0 ) {
-            std::println( "[error] recvfrom returned less than 0 indicating a failure: {}", n );
+            if ( errno == EAGAIN || errno == EWOULDBLOCK ) {
+                continue; // just a timeout, loop back and recheck stop_flag
+            }
+            std::println( "[error] recvfrom returned: {}", errno );
             break;
         }
 
