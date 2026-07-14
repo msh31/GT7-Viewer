@@ -3,7 +3,7 @@
 #include <backend/paths.hpp>
 #include <backend/ui_manager/ui_manager.hpp>
 
-#include <frontend/layout/tabbar/tabbar.hpp>
+#include <frontend/layout/none/none.hpp>
 
 class CApp {
     public:
@@ -12,7 +12,7 @@ class CApp {
 
     private:
         CConfig m_config;
-        CUIManager m_ui_manager{ std::make_unique<CTabbarShell>( ) };
+        CUIManager m_ui_manager{ std::make_unique<CNoShell>( ) }; // kinda sucks
 
         CStatusBar m_statusbar;
 };
