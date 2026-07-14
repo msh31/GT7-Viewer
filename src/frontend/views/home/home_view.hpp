@@ -4,6 +4,7 @@
 
 class CHomeView : public CBaseView {
     public:
+        CHomeView( CConfig& cfg );
         ~CHomeView( ) override;
         void render( ) override;
         void on_enter( ) override;
@@ -13,7 +14,9 @@ class CHomeView : public CBaseView {
         static int filter_ip_chars( ImGuiInputTextCallbackData* data );
 
         std::string m_ps_addr = { };
+        bool m_is_connected = false;
 
         CServer m_server;
         SOCKET m_socket;
+        CConfig& m_config;
 };

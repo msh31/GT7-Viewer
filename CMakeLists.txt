@@ -83,7 +83,6 @@ set(gt7viewer_SOURCES
 	"src/frontend/notification/notification.cpp"
 	"src/frontend/theme/theme.cpp"
 	"src/frontend/views/home/home_view.cpp"
-	"src/frontend/views/settings/settings_view.cpp"
 	"src/main.cpp"
 	"vendor/imgui/imgui_stdlib.cpp"
 )

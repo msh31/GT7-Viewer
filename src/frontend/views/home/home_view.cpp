@@ -1,17 +1,65 @@
 #include "home_view.hpp"
+#include <backend/font_manager/font_manager.hpp>
 #include <frontend/notification/notification.hpp>
+#include <frontend/ui.hpp>
+
+#include <backend/heartbeat/heartbeat.hpp>
+
+CHomeView::CHomeView( CConfig& cfg ) : m_config( cfg ) {};
 
 void CHomeView::on_enter( ) {
     if ( !m_server.start( ) ) {
         SPDLOG_ERROR( "Failed to start UDP server!" );
     }
     m_socket = m_server.get_socket( );
+
+    auto config_ip = m_config.settings.ip_address;
+    if ( !config_ip.empty( ) ) {
+        m_ps_addr = config_ip;
+    }
 }
 
 void CHomeView::render( ) {
-    ImGui::InputText( "...", &m_ps_addr, ImGuiInputTextFlags_CallbackCharFilter, filter_ip_chars );
-    ImGui::Text( "Your IP: %s", m_ps_addr.data( ) );
-    // TODO
+    ui::add_font_text(
+        "Gran Turismo 7 Metrics Viewer", CFontManager::get( ).get_font( "jbm_reg_xl" ).value_or( nullptr ) ); // sus
+    ImGui::Dummy( ImVec2( 0.0f, 10.0f ) );
+
+    ImGui::Text( "Enter your Playstation's IP address: " );
+    ImGui::SameLine( );
+    ImGui::Dummy( ImVec2( 0.0f, 1.0f ) );
+    ImGui::SetNextItemWidth( ImGui::CalcTextSize( "888.888.888.888" ).x + 100.f );
+    ImGui::InputText( "##ip_input", &m_ps_addr, ImGuiInputTextFlags_CallbackCharFilter, filter_ip_chars );
+
+    bool connected = m_is_connected;
+    const std::string con_text = connected ? "Disconnect" : "Connect";
+    if ( ImGui::Button( con_text.c_str( ) ) ) {
+        if ( connected ) {
+            m_is_connected = false;
+        } else {
+            if ( m_ps_addr.empty( ) ) {
+                Notify::show_notification( "Connection Failure", "Empty IP, refusing to connect.", 3000 );
+            } else {
+                in_addr scratch;
+                if ( inet_pton( AF_INET, m_ps_addr.c_str( ), &scratch ) <= 0 ) {
+                    Notify::show_notification( "Connection Failure", "Invalid IP format.", 3000 );
+                } else {
+                    m_config.settings.ip_address = m_ps_addr;
+
+                    CHeartBeat heartbeat( m_ps_addr, 33739 ); // TODO: make this not magic
+                    if ( !heartbeat.send( m_socket, 'A' ) ) {
+                        Notify::show_notification( "Connection Failure", "Failed to send heartbeat!", 1500 );
+                    } else { // packet A
+                        auto n_str = std::format( "Sent heartbeat to: {}:{}", m_ps_addr, 33739 );
+                        Notify::show_notification( "Connection Success", n_str, 3000 );
+                        m_is_connected = true;
+                        m_config.save( );
+                    }
+                }
+            }
+        }
+    }
+    ImGui::Separator( );
+    ImGui::Dummy( ImVec2( 0.0f, 100.0f ) );
 }
 
 int CHomeView::filter_ip_chars( ImGuiInputTextCallbackData* data ) {
