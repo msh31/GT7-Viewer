@@ -82,11 +82,11 @@ void CWindowManager::setup_imgui( ) {
     io.IniFilename = nullptr; // no imgui.ini
     io.LogFilename = nullptr; // no imgui log pls
 
-    CFontManager::get( ).load_from_memory( { "jbm_reg", 16.0f, false, true }, (void*)jbm_reg, jbm_reg_len );
+    CFontManager::get( ).load_from_memory( { "jbm_reg", 18.0f, false, true }, (void*)jbm_reg, jbm_reg_len );
     CFontManager::get( ).load_from_memory(
-        { "font_awesome", 16.0f, true, false }, (void*)font_awesome, font_awesome_len );
+        { "font_awesome", 18.0f, true, false }, (void*)font_awesome, font_awesome_len );
 
-    CFontManager::get( ).load_from_memory( { "jbm_reg_xl", 18.0f, false, false }, (void*)jbm_reg, jbm_reg_len );
+    CFontManager::get( ).load_from_memory( { "jbm_reg_xl", 24.0f, false, false }, (void*)jbm_reg, jbm_reg_len );
 
     if ( !ImGui_ImplGlfw_InitForOpenGL( m_window, true ) ) {
         throw std::runtime_error( "Failed to initialize ImGui for OpenGL" );
