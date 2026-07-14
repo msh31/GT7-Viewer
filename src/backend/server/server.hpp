@@ -13,7 +13,6 @@ class CServer {
         }
 
         bool start( );
-        bool stop( );
         void listen( );
 
         SOCKET get_socket( ) const { return m_socket; };
@@ -26,6 +25,8 @@ class CServer {
         std::atomic<bool> stop_flag{ false };
 
     private:
+        bool stop( );
+
         bool m_is_server_running = false;
         int m_port = 33740;
 

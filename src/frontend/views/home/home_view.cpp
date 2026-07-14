@@ -52,7 +52,7 @@ int CHomeView::filter_ip_chars( ImGuiInputTextCallbackData* data ) {
 
 void CHomeView::handle_connect_click( bool connected ) {
     if ( connected ) {
-        m_is_connected = false;
+        handle_disconnect( );
     } else {
         if ( m_ps_addr.empty( ) ) {
             Notify::show_notification( "Connection Failure", "Empty IP, refusing to connect.", 3000 );
@@ -79,12 +79,14 @@ void CHomeView::handle_connect_click( bool connected ) {
     }
 }
 
-void CHomeView::on_exit( ) {
+void CHomeView::on_exit( ) { handle_disconnect( ); }
+
+void CHomeView::handle_disconnect( ) {
+    m_is_connected = false;
     if ( m_server_thread.joinable( ) ) {
-        SPDLOG_INFO( "Waiting for server to close before exiting" );
+        Notify::show_notification( "Information", "Waiting for server to stop before disconnecting..", 2000 );
         m_server.stop_flag = true;
         m_server_thread.join( );
-    } else {
     }
 }
 
