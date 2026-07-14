@@ -44,3 +44,9 @@ std::array<uint8_t, 32> Packet::get_key_bytes( ) {
     }
     return bytes;
 }
+
+Packet::A Packet::parse( const std::array<uint8_t, 296>& bytes ) {
+    A a = { };
+    std::memcpy( &a, bytes.data( ), sizeof( a ) );
+    return a;
+}

@@ -71,6 +71,9 @@ void CServer::listen( ) {
         auto nonce = Packet::derive_nonce( output );
         auto decrypted_packet = Packet::decrypt( output, key, nonce );
 
-        std::println( "{}", std::span( decrypted_packet ).first( 16 ) );
+        // std::println( "{}", std::span( decrypted_packet ).first( 16 ) );
+        Packet::A packet_a = Packet::parse( decrypted_packet );
+        std::println( "Speed: {}", packet_a.speed );
+        std::println( "Lap: {}/{}", packet_a.lapCount, packet_a.totalLaps );
     }
 }
