@@ -20,6 +20,10 @@ void CHomeView::on_enter( ) {
 }
 
 void CHomeView::render( ) {
+    bool connected = m_is_connected;
+    if ( connected ) {
+        m_packet_a = m_server.get_latest_packet_a( );
+    }
     ui::add_font_text(
         "Gran Turismo 7 Metrics Viewer", CFontManager::get( ).get_font( "jbm_reg_xl" ).value_or( nullptr ) ); // sus
     ImGui::Dummy( ImVec2( 0.0f, 10.0f ) );
@@ -30,11 +34,14 @@ void CHomeView::render( ) {
     ImGui::SetNextItemWidth( ImGui::CalcTextSize( "888.888.888.888" ).x + 100.f );
     ImGui::InputText( "##ip_input", &m_ps_addr, ImGuiInputTextFlags_CallbackCharFilter, filter_ip_chars );
 
-    bool connected = m_is_connected;
     const std::string con_text = connected ? "Disconnect" : "Connect";
     if ( ImGui::Button( con_text.c_str( ) ) ) handle_connect_click( connected );
     ImGui::Separator( );
     ImGui::Dummy( ImVec2( 0.0f, 100.0f ) );
+
+    ImGui::BeginChild( "##main_area", ImVec2( 0, 0 ) );
+    ImGui::Text( "%.0f KM/H", m_packet_a.speed * 3.6 ); // game uses m/s
+    ImGui::EndChild( );
 }
 
 int CHomeView::filter_ip_chars( ImGuiInputTextCallbackData* data ) {
@@ -64,6 +71,8 @@ void CHomeView::handle_connect_click( bool connected ) {
                     Notify::show_notification( "Connection Success", n_str, 3000 );
                     m_is_connected = true;
                     m_config.save( );
+
+                    m_server_thread = std::thread( &CServer::listen, &m_server );
                 }
             }
         }
@@ -71,7 +80,12 @@ void CHomeView::handle_connect_click( bool connected ) {
 }
 
 void CHomeView::on_exit( ) {
-    // TODO
+    if ( m_server_thread.joinable( ) ) {
+        SPDLOG_INFO( "Waiting for server to close before exiting" );
+        m_server.stop_flag = true;
+        m_server_thread.join( );
+    } else {
+    }
 }
 
 CHomeView::~CHomeView( ) {}

@@ -17,6 +17,9 @@ class CHomeView : public CBaseView {
         std::string m_ps_addr = { };
         bool m_is_connected = false;
 
+        std::thread m_server_thread;
+        Packet::A m_packet_a = { };
+
         CServer m_server;
         SOCKET m_socket;
         CConfig& m_config;

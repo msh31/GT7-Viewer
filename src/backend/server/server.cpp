@@ -1,10 +1,9 @@
 #include "server.hpp"
-#include <backend/packet/packet.hpp>
 #include <cerrno>
 
 // PUBLIC
 bool CServer::start( ) {
-    std::println( "[inf] starting UDP server.." );
+    SPDLOG_INFO( "[inf] starting UDP server.." );
 
 #ifdef _WIN32
     WSADATA wsaData;
@@ -27,13 +26,23 @@ bool CServer::start( ) {
         return false;
     }
 
+    struct timeval tv;
+    tv.tv_sec = 1;
+    tv.tv_usec = 0;
+
+    auto res = setsockopt( m_socket, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof( tv ) );
+    if ( res < 0 ) {
+        SPDLOG_ERROR( "[error]: setsockopt failed with error code: {}", errno );
+        return false;
+    }
+
     m_is_server_running = true;
-    std::println( "[inf] started UDP server on port {}!", m_port );
+    SPDLOG_INFO( "[inf] started UDP server on port {}!", m_port );
     return true;
 }
 
 bool CServer::stop( ) {
-    std::println( "[inf] stopping UDP server on port {}..", m_port );
+    SPDLOG_INFO( "[inf] stopping UDP server on port {}..", m_port );
 #ifdef _WIN32
     WSACleanup( );
 #endif
@@ -56,18 +65,16 @@ void CServer::listen( ) {
             if ( errno == EAGAIN || errno == EWOULDBLOCK ) {
                 continue; // just a timeout, loop back and recheck stop_flag
             }
-            std::println( "[error] recvfrom returned: {}", errno );
+            SPDLOG_ERROR( "[error] recvfrom returned: {}", errno );
             break;
         }
-
         char ip[INET_ADDRSTRLEN];
         inet_ntop( AF_INET, &client.sin_addr, ip, sizeof( ip ) );
-        std::println( "[inf] received {} bytes from {}:{}", n, ip, ntohs( client.sin_port ) );
+        SPDLOG_INFO( "[inf] received {} bytes from {}:{}", n, ip, ntohs( client.sin_port ) );
 
         auto buffer = reinterpret_cast<uint8_t*>( buf );
-
         if ( n != 296 ) {
-            std::println( "[error] received {} bytes when 296 were expected!", n );
+            SPDLOG_ERROR( "[error] received {} bytes when 296 were expected!", n );
             continue;
         }
         std::span<uint8_t, 296> output( buffer, n );
@@ -76,8 +83,10 @@ void CServer::listen( ) {
         auto decrypted_packet = Packet::decrypt( output, key, nonce );
 
         // std::println( "{}", std::span( decrypted_packet ).first( 16 ) );
-        Packet::A packet_a = Packet::parse( decrypted_packet );
-        std::println( "Speed: {}", packet_a.speed );
-        std::println( "Lap: {}/{}", packet_a.lapCount, packet_a.totalLaps );
+
+        std::lock_guard lock( m_packet_mutex );
+        m_packet_a = Packet::parse( decrypted_packet );
+        // std::println( "Speed: {}", packet_a.speed );
+        // std::println( "Lap: {}/{}", packet_a.lapCount, packet_a.totalLaps );
     }
 }
