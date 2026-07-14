@@ -12,6 +12,7 @@ class CHomeView : public CBaseView {
 
     private:
         static int filter_ip_chars( ImGuiInputTextCallbackData* data );
+        void handle_connect_click( bool connected );
 
         std::string m_ps_addr = { };
         bool m_is_connected = false;

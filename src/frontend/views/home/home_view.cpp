@@ -32,32 +32,7 @@ void CHomeView::render( ) {
 
     bool connected = m_is_connected;
     const std::string con_text = connected ? "Disconnect" : "Connect";
-    if ( ImGui::Button( con_text.c_str( ) ) ) {
-        if ( connected ) {
-            m_is_connected = false;
-        } else {
-            if ( m_ps_addr.empty( ) ) {
-                Notify::show_notification( "Connection Failure", "Empty IP, refusing to connect.", 3000 );
-            } else {
-                in_addr scratch;
-                if ( inet_pton( AF_INET, m_ps_addr.c_str( ), &scratch ) <= 0 ) {
-                    Notify::show_notification( "Connection Failure", "Invalid IP format.", 3000 );
-                } else {
-                    m_config.settings.ip_address = m_ps_addr;
-
-                    CHeartBeat heartbeat( m_ps_addr, 33739 ); // TODO: make this not magic
-                    if ( !heartbeat.send( m_socket, 'A' ) ) {
-                        Notify::show_notification( "Connection Failure", "Failed to send heartbeat!", 1500 );
-                    } else { // packet A
-                        auto n_str = std::format( "Sent heartbeat to: {}:{}", m_ps_addr, 33739 );
-                        Notify::show_notification( "Connection Success", n_str, 3000 );
-                        m_is_connected = true;
-                        m_config.save( );
-                    }
-                }
-            }
-        }
-    }
+    if ( ImGui::Button( con_text.c_str( ) ) ) handle_connect_click( connected );
     ImGui::Separator( );
     ImGui::Dummy( ImVec2( 0.0f, 100.0f ) );
 }
@@ -66,6 +41,33 @@ int CHomeView::filter_ip_chars( ImGuiInputTextCallbackData* data ) {
     ImWchar c = data->EventChar;
     if ( std::isdigit( c ) || c == '.' ) return 0; // 0 = accept
     return 1;                                      // 1 = reject
+}
+
+void CHomeView::handle_connect_click( bool connected ) {
+    if ( connected ) {
+        m_is_connected = false;
+    } else {
+        if ( m_ps_addr.empty( ) ) {
+            Notify::show_notification( "Connection Failure", "Empty IP, refusing to connect.", 3000 );
+        } else {
+            in_addr scratch;
+            if ( inet_pton( AF_INET, m_ps_addr.c_str( ), &scratch ) <= 0 ) {
+                Notify::show_notification( "Connection Failure", "Invalid IP format.", 3000 );
+            } else {
+                m_config.settings.ip_address = m_ps_addr;
+
+                CHeartBeat heartbeat( m_ps_addr, 33739 ); // TODO: make this not magic
+                if ( !heartbeat.send( m_socket, 'A' ) ) {
+                    Notify::show_notification( "Connection Failure", "Failed to send heartbeat!", 1500 );
+                } else { // packet A
+                    auto n_str = std::format( "Sent heartbeat to: {}:{}", m_ps_addr, 33739 );
+                    Notify::show_notification( "Connection Success", n_str, 3000 );
+                    m_is_connected = true;
+                    m_config.save( );
+                }
+            }
+        }
+    }
 }
 
 void CHomeView::on_exit( ) {
