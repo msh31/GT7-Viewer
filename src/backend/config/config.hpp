@@ -9,6 +9,7 @@ class CConfig {
 
         struct AppConfig {
                 bool dark_mode = true;
+                std::string ip_address = "";
         };
 
         AppConfig settings;

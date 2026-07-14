@@ -39,6 +39,7 @@ CConfig::~CConfig( ) {
 void CConfig::save( ) {
     json data;
     data["dark_mode"] = settings.dark_mode;
+    data["ip_address"] = settings.ip_address;
 
     std::ofstream file( m_config_file );
     file << data.dump( 4 );
@@ -54,9 +55,12 @@ void CConfig::load( ) {
     }
 
     try {
-        data               = json::parse( file );
+        data = json::parse( file );
         settings.dark_mode = data.value( "dark_mode", true );
+        settings.ip_address = data.value( "ip_address", "" );
     } catch ( json::exception& ex ) {
         SPDLOG_CRITICAL( "config parsing error: {}", ex.what( ) );
     }
+
+    SPDLOG_INFO( "Loaded config!" );
 }
