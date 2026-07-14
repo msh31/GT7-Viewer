@@ -9,7 +9,7 @@ on:
         default: false
 
 env:
-  APP_NAME: template_app
+  APP_NAME: GT7Viewer
 
 jobs:
   build-linux:
