@@ -11,3 +11,15 @@ project = "GT7-Viewer"
     id = 1
     text = "recvfrom timeout means join() can still stall briefly on shutdown; switch to non-blocking socket + poll/select if this becomes an issue"
     created = 2026-07-14T23:06:24.704696147+02:00
+
+[[tasks]]
+  id = 2
+  title = "Add more IP validation before determining a successful connection"
+  status = "todo"
+  created = 2026-07-15T01:29:52.143017897+02:00
+  order = 1
+
+  [[tasks.comments]]
+    id = 1
+    text = "determine how, undecided."
+    created = 2026-07-15T01:29:59.550937926+02:00
