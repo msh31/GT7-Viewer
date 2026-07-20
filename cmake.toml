@@ -23,8 +23,6 @@ required = true
 required = true
 [find-package.spdlog]
 required = true
-# [find-package.GTest]
-# required = true
 
 [variables]
 CMAKE_EXPORT_COMPILE_COMMANDS = true
@@ -52,15 +50,3 @@ target_sources(gt7viewer PRIVATE
     "${IMGUI_ROOT_DIR}/res/bindings/imgui_impl_opengl3.cpp"
 )
 """
-
-# [target.viewer_tests]
-# type = "executable"
-# sources = ["tests/**.cpp"]
-# include-directories = ["src"]
-# compile-features = ["cxx_std_23"]
-# link-libraries = ["GTest::gtest_main"]
-# precompile-headers = ["src/pch.hpp"]
-# cmake-after = """
-# enable_testing()
-# add_test(NAME template_tests COMMAND template_tests)
-# """
