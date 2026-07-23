@@ -1,9 +1,10 @@
 #include "home_view.hpp"
 #include <backend/font_manager/font_manager.hpp>
+#include <backend/heartbeat/heartbeat.hpp>
+
+#include <frontend/components/spinner.hpp>
 #include <frontend/notification/notification.hpp>
 #include <frontend/ui.hpp>
-
-#include <backend/heartbeat/heartbeat.hpp>
 
 CHomeView::CHomeView( CConfig& cfg ) : m_config( cfg ) {};
 
@@ -39,9 +40,13 @@ void CHomeView::render( ) {
     ImGui::Separator( );
     ImGui::Dummy( ImVec2( 0.0f, 100.0f ) );
 
-    ImGui::BeginChild( "##main_area", ImVec2( 0, 0 ) );
-    ImGui::Text( "%.0f KM/H", m_packet_a.speed * 3.6 ); // game uses m/s
-    ImGui::EndChild( );
+    if ( connected ) {
+        ImGui::BeginChild( "##main_area", ImVec2( 0, 0 ) );
+        ImGui::Text( "%.0f KM/H", m_packet_a.speed * 3.6 ); // game uses m/s
+        ImGui::EndChild( );
+    } else {
+        Spinner::render( );
+    }
 }
 
 int CHomeView::filter_ip_chars( ImGuiInputTextCallbackData* data ) {
