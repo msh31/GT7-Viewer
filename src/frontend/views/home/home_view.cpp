@@ -34,7 +34,7 @@ void CHomeView::render( ) {
     ImGui::SetNextItemWidth( ImGui::CalcTextSize( "888.888.888.888" ).x + 100.f );
     ImGui::InputText( "##ip_input", &m_ps_addr, ImGuiInputTextFlags_CallbackCharFilter, filter_ip_chars );
 
-    const std::string con_text = connected ? "Disconnect" : "Connect";
+    const std::string con_text = connected ? "Stop Recording" : "Start Recording";
     if ( ImGui::Button( con_text.c_str( ) ) ) handle_connect_click( connected );
     ImGui::Separator( );
     ImGui::Dummy( ImVec2( 0.0f, 100.0f ) );
