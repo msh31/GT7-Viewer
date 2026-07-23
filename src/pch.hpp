@@ -15,6 +15,7 @@
     #include <memory>
     #include <print>
     #include <regex>
+    #include <set>
     #include <stdexcept>
     #include <string>
     #include <unordered_set>
@@ -24,7 +25,6 @@
     #include "imgui_stdlib.h"
 
     #include <backend/logger.hpp>
-    #include <types.hpp> //holds custom types defined by the application
 
 namespace fs = std::filesystem;
 #endif
